@@ -25,11 +25,16 @@ const dashboard = async (req, res) => {
 
   const token = authHeader.split(" ")[1];
 
-  const luckyNumber = Math.floor(Math.random() * 100);
-  res.status(200).json({
-    msg: `HELLO JOHN`,
-    secret: `Here is your authorized data, Your luckky number is ${luckyNumber}`,
-  });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const luckyNumber = Math.floor(Math.random() * 100);
+    res.status(200).json({
+      msg: `HELLO ${decoded.username}`,
+      secret: `Here is your authorized data, Your luckky number is ${luckyNumber}`,
+    });
+  } catch (error) {
+    throw new CustomAPIError("NOT AUTHORIZED TO ACCESS THIS ROUTE", 401);
+  }
 };
 
 module.exports = { dashboard, login };
